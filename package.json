@@ -1,5 +1,5 @@
 {
-  "name": "smser",
+  "name": "smsframework",
   "description": "SMS framework with pluggable providers",
   "version": "0.0.1",
   
@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:kolypto/nodejs-smser.git"
+    "url": "git@github.com:kolypto/nodejs-smsframework.git"
   },
   
   "main": "./lib/index",

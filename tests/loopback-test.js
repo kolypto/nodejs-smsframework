@@ -3,7 +3,7 @@
 var request = require('request'),
     Q = require('q'),
     _ = require('lodash'),
-    smser = require('../')
+    smsframework = require('../')
     ;
 
 /** Test the LoopbackProvider in real conditions
@@ -11,7 +11,7 @@ var request = require('request'),
  */
 exports.testLoopbackProvider = function(test){
     // Create a gateway with 2 providers
-    var gw = new smser.Gateway();
+    var gw = new smsframework.Gateway();
     gw.addProvider('loopback', 'lo0', {});
     gw.addProvider('loopback', 'lo1', {});
 

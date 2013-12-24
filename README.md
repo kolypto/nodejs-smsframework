@@ -1,18 +1,19 @@
-[![Version](https://badge.fury.io/js/smser.png)](https://npmjs.org/package/smser)
-[![Dependency Status](https://gemnasium.com/kolypto/nodejs-smser.png)](https://gemnasium.com/kolypto/nodejs-smser)
-[![Build Status](https://travis-ci.org/kolypto/nodejs-smser.png?branch=master)](https://travis-ci.org/kolypto/nodejs-smser)
+[![Version](https://badge.fury.io/js/smsframework.png)](https://npmjs.org/package/smsframework)
+[![Dependency Status](https://gemnasium.com/kolypto/nodejs-smsframework.png)](https://gemnasium.com/kolypto/nodejs-smsframework)
+[![Build Status](https://travis-ci.org/kolypto/nodejs-smsframework.png?branch=master)](https://travis-ci.org/kolypto/nodejs-smsframework)
 
-SMSer
-=======
+SMSframework
+============
 
-SMSer is an SMS framework with pluggable providers.
+SMS framework with pluggable providers.
 
 Key features:
 
 * Send messages
 * Receive messages
 * Delivery confirmations
-* Handle multiple providers with a single object
+* Handle multiple providers with a single gateway
+* Event-oriented
 * Promise-based: using the [q](https://npmjs.org/package/q) package
 * Unit-tested
 
@@ -33,7 +34,7 @@ Supported Providers
 ===================
 
 * loop: loopback provider for testing
-* [Vianett](http://www.vianett.com/)
+* [Vianett](http://www.vianett.com/):
 * [Clickatell](https://www.clickatell.com/):
 
 All providers are temporary bundled.
