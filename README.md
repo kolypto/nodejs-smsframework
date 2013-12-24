@@ -436,6 +436,18 @@ we now have a `'http://localhost:80/sms/primary/receiver'` path available.
 
 In your Clickatell admin area, add this URL so Clickatell passes the incoming messages to us.
 
+## Receiver Security
+
+It's adviced to mount the receivers under some difficult-to-guess path: otherwise, attackers can send
+fake messages into your system
+
+Secure example:
+
+```js
+app.use('/sms/Zei6Ohth', gateway.express());
+```
+
+NOTE: Other mechanisms, such as basic authentication, are not typically useful as some services do not support that.
 
 
 
