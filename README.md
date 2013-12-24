@@ -111,6 +111,8 @@ gateway.addProvider('provider1', 'alias1', {}); // package 'smsframework-provide
 gateway.addProvider('provider2', 'alias2', {}); // package 'smsframework-provider2'
 ```
 
+The first provider becomes the default one, unless you use [Message Routing](#message-routing).
+
 ### Gateway.addProvider(providers)
 
 An alternative syntax to add providers in bulk.
@@ -183,11 +185,9 @@ Methods:
 
     If no provider is specified - the first one is used to deliver the message.
 
-* `options(options: OutgoingMessageOptions)`: Allows to specify sending options.
+* `route(..values)`: Specify routing values. See [Message Routing](#message-routing).
 
-    This object can contain provider-specific options: refer to the provider documentation for the details.
-
-    However, some of the options are standardized:
+* `options(options: OutgoingMessageOptions)`: Specify sending options:
 
     * `allow_reply: Boolean`: Allow replies for this message. Default: `true`
     * `status_report: Boolean`: Request a delivery report. Default: `false`. See: [status](#status)
@@ -196,12 +196,12 @@ Methods:
 
         *NOTE*: This advanced feature is not supported by all providers! Moreover, some of them can have special restrictions.
 
-* `route(..values)`: Specify routing values. See [Message Routing](#message-routing).
+* `params(params: Object)`: Specify provider-dependent sending parameters: refer to the provider documentation for the details.
 
 All the above methods are optional, you can just send the message as is:
 
 ```js
-gateway.message('+123456', 'hi there').send().done(); // using the 1st provider
+gateway.message('+123456', 'hi there').send().done(); // using the default provider
 ```
 
 Here's the full example:
@@ -221,6 +221,9 @@ gateway.message('+123456', 'hi there')
         status_report: false,
         expires: 60,
         senderId: 'smsframework'
+    })
+    .params({
+        // some provider-dependent parameters here
     })
     // Handle success
     .then(function(message){
@@ -487,3 +490,5 @@ gateway.setRouter(function(message, module, type){
     return 'primary';
 });
 ```
+
+Router function is also the right place to specify message options & parameters.

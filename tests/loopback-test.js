@@ -75,6 +75,7 @@ exports.testLoopbackProvider = function(test){
                             msgid: 1,
                             routingValues: undefined,
                             options: { allow_reply: true, status_report: false, expires: undefined, senderId: undefined },
+                            params: {},
                             info: { msgid: 1 }
                         }
                     );
@@ -122,6 +123,7 @@ exports.testLoopbackProvider = function(test){
                             msgid: 1,
                             routingValues: undefined,
                             options: { allow_reply: true, status_report: false, expires: undefined, senderId: undefined },
+                            params: {},
                             info: { msgid: 1 }
                         }
                     );
