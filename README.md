@@ -196,10 +196,12 @@ Methods:
 
         *NOTE*: This advanced feature is not supported by all providers! Moreover, some of them can have special restrictions.
 
+* `route(..values)`: Specify routing values. See [Message Routing](#message-routing).
+
 All the above methods are optional, you can just send the message as is:
 
 ```js
-gateway.message('+123456', 'hi there').send(); // using the 1st provider
+gateway.message('+123456', 'hi there').send().done(); // using the 1st provider
 ```
 
 Here's the full example:
@@ -450,12 +452,38 @@ SMSframework requires you to explicitly specify the provider for each message, o
 In real world conditions with multiple providers, you may want a router function that decides on which provider to use
 and which options to pick.
 
-The idea is to implement a router function that receives 2 additional arguments:
+In order to achive flexible message routing, we need to associate some metadata with each message, for instance:
 
-* `module`: name of the sending module
-* `type`: type of the message
+* `module`: name of the sending module: e.g. "users"
+* `type`: type of the message: e.g. "notification"
 
 These 2 arbitrary strings need to be standardized in the application code, thus offering the possibility to define
 complex routing rules.
 
-TODO: router
+When creating the message, use `route()` function to specify these values:
+
+```js
+gateway.message('+1234', 'hi')
+    .route('users', 'notification')
+    .send().done();
+```
+
+Now, set a router function:
+a function which gets an outgoing message + some additional routing values, and decides on the provider to use:
+
+```js
+gateway.addProvider('clickatell', 'primary', {});
+gateway.addProvider('clickatell', 'secondary', {});
+gateway.addProvider('clickatell', 'usa', {});
+
+gateway.setRouter(function(message, module, type){
+    // Use 'usa' for all messages to USA
+    if (/^+1/.test(message.to))
+        return 'usa';
+    // Use 'secondary' for notifications
+    if (type === 'notification')
+        return 'secondary';
+    // Use 'primary' as a default
+    return 'primary';
+});
+```

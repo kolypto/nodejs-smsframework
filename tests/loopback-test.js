@@ -73,6 +73,7 @@ exports.testLoopbackProvider = function(test){
                             body: 'hello?',
                             provider: 'lo0',
                             msgid: 1,
+                            routingValues: undefined,
                             options: { allow_reply: true, status_report: false, expires: undefined, senderId: undefined },
                             info: { msgid: 1 }
                         }
@@ -119,6 +120,7 @@ exports.testLoopbackProvider = function(test){
                             body: 'kolypto',
                             provider: 'lo1',
                             msgid: 1,
+                            routingValues: undefined,
                             options: { allow_reply: true, status_report: false, expires: undefined, senderId: undefined },
                             info: { msgid: 1 }
                         }
@@ -198,6 +200,21 @@ exports.testLoopbackProvider = function(test){
                 .finally(function(){
                     server.close();
                 });
+        },
+        // Test router function
+        function(){
+            gw.setRouter(function(om, module, type){
+                if (module === 'test' && type === 'notify')
+                    return 'lo1';
+                return 'lo0';
+            });
+
+            return Q.all([
+                gw.message('+999', 'hi').route('test', 'lol').send()
+                    .then(function(message){ test.strictEqual(message.provider, 'lo0'); }),
+                gw.message('+999', 'hi').route('test', 'notify').send()
+                    .then(function(message){ test.strictEqual(message.provider, 'lo1'); })
+            ]);
         }
     ].reduce(Q.when, Q(1))
         .catch(function(err){ test.ok(false, err.stack); })
