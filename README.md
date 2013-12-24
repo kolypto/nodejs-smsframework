@@ -13,7 +13,7 @@ Key features:
 * Receive messages
 * Delivery confirmations
 * Handle multiple providers with a single gateway
-* Event-oriented
+* Event-driven interface
 * Promise-based: using the [q](https://npmjs.org/package/q) package
 * Unit-tested
 
