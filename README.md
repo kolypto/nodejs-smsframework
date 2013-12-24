@@ -30,6 +30,7 @@ Table of Contents
     * <a href="#providers">Providers</a>
         * <a href="#gatewayaddproviderprovider-alias-config">Gateway.addProvider(provider, alias, config)</a>
         * <a href="#gatewayaddproviderproviders">Gateway.addProvider(providers)</a>
+        * <a href="#gatewaygetprovideraliasiprovider">Gateway.getProvider(alias):IProvider</a>
     * <a href="#sending-messages">Sending Messages</a>
     * <a href="#sending-errors">Sending Errors</a>
     * <a href="#events">Events</a>
@@ -38,14 +39,20 @@ Table of Contents
         * <a href="#msg-in">msg-in</a>
         * <a href="#status">status</a>
         * <a href="#error">error</a>
+    * <a href="#functional-handlers">Functional Handlers</a>
+        * <a href="#gatewayreceivemessagecallbackgateway">Gateway.receiveMessage(callback):Gateway</a>
+        * <a href="#gatewayreceivestatuscallbackgateway">Gateway.receiveStatus(callback):Gateway</a>
 * <a href="#data-objects">Data Objects</a>
     * <a href="#incomingmessage">IncomingMessage</a>
     * <a href="#outgoingmessage">OutgoingMessage</a>
     * <a href="#messagestatus">MessageStatus</a>
 * <a href="#provider-http-receivers">Provider HTTP Receivers</a>
+* <a href="#message-routing">Message Routing</a>
 * <a href="#bundled-providers">Bundled Providers</a>
     * <a href="#loopbackprovider">LoopbackProvider</a>
-* <a href="#message-routing">Message Routing</a> 
+        * <a href="#loopbackprovidergettrafficarray">LoopbackProvider.getTraffic():Array.</a>
+        * <a href="#loopbackproviderreceivefrom-bodyq">LoopbackProvider.receive(from, body):Q</a>
+        * <a href="#loopbackprovidersubscribesim-callback">LoopbackProvider.subscribe(sim, callback)</a> 
 
 
 
@@ -330,6 +337,22 @@ sends 'OK' to the SMS service.. and the message is lost forever.
 Functional handlers solve this problem: you register a callback function that returns a promise, and in case the promise
 is rejected - the provider reports an error to the SMS provider so it retries the delivery later.
 
+Example:
+
+```js
+// Handler for incoming messages
+gateway.receiveMessage(function(message){
+    return Q.nmcall(db, 'save', message);
+});
+
+// Handler for incoming status reports
+gateway.receiveStatus(function(status){
+    return Q.nmcall(db, 'update', status.msgid);
+});
+```
+
+Whenever any of the handlers fail - the Provider reports an error to the SMS service, so the data is re-sent later.
+
 ### Gateway.receiveMessage(callback):Gateway
 Subscribe a callback to Incoming Messages. Can be called multiple times.
 
@@ -345,22 +368,6 @@ Arguments:
 
 * `callback: function(IncomingMessage):Q`: A callback that processes a Message Status.
     If it returns a rejection - the Provider reports an error to the SMS service.
-
-### Example
-
-```js
-// Handler for incoming messages
-gateway.receiveMessage(function(message){
-    return Q.nmcall(db, 'save', message);
-});
-
-// Handler for incoming status reports
-gateway.receiveStatus(function(status){
-    return Q.nmcall(db, 'update', status.msgid);
-});
-```
-
-Whenever any of the handlers fail - the Provider reports an error to the SMS service, so the data is re-sent later.
 
 
 
