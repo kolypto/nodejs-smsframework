@@ -274,7 +274,7 @@ gateway.message('+123456', 'hi there').send()
 Events
 ------
 
-The `Gateway` object fires the following events:
+The `Gateway` object is an `EventEmitter` which fires the following events:
 
 ### msg-out
 Outgoing Message: a message is being sent.
@@ -321,6 +321,52 @@ Arguments:
 Useful to attach some centralized logging utility. Consider [winston](https://npmjs.org/package/winston) for this purpose.
 
 
+
+Functional Handlers
+-------------------
+Events are handy, unless you need more reliability: if an event-handler fails to process the message, the Provider still
+sends 'OK' to the SMS service.. and the message is lost forever.
+
+Functional handlers solve this problem: you register a callback function that returns a promise, and in case the promise
+is rejected - the provider reports an error to the SMS provider so it retries the delivery later.
+
+### Gateway.receiveMessage(callback):Gateway
+Subscribe a callback to Incoming Messages. Can be called multiple times.
+
+Arguments:
+
+* `callback: function(IncomingMessage):Q`: A callback that processes an Incoming Message.
+    If it returns a rejection - the Provider reports an error to the SMS service.
+
+### Gateway.receiveStatus(callback):Gateway
+Subscribe a callback to Message Statuses. Can be called multiple times.
+
+Arguments:
+
+* `callback: function(IncomingMessage):Q`: A callback that processes a Message Status.
+    If it returns a rejection - the Provider reports an error to the SMS service.
+
+### Example
+
+```js
+// Handler for incoming messages
+gateway.receiveMessage(function(message){
+    return Q.nmcall(db, 'save', message);
+});
+
+// Handler for incoming status reports
+gateway.receiveStatus(function(status){
+    return Q.nmcall(db, 'update', status.msgid);
+});
+```
+
+Whenever any of the handlers fail - the Provider reports an error to the SMS service, so the data is re-sent later.
+
+
+
+
+
+
 Data Objects
 ============
 SMSframework uses the following objects to represent message flows.
@@ -342,6 +388,9 @@ MessageStatus
 A status report received from the provider.
 
 Source: [lib/data/MessageStatus.js](lib/data/MessageStatus.js).
+
+
+
 
 
 
@@ -379,6 +428,61 @@ Assuming that the provider declares a receiver as `'/receiver'`,
 we now have a `'http://localhost:80/sms/primary/receiver'` path available.
 
 In your Clickatell admin area, add this URL so Clickatell passes the incoming messages to us.
+
+
+
+
+
+
+Message Routing
+===============
+SMSframework requires you to explicitly specify the provider for each message, or uses the first one.
+
+In real world conditions with multiple providers, you may want a router function that decides on which provider to use
+and which options to pick.
+
+In order to achive flexible message routing, we need to associate some metadata with each message, for instance:
+
+* `module`: name of the sending module: e.g. "users"
+* `type`: type of the message: e.g. "notification"
+
+These 2 arbitrary strings need to be standardized in the application code, thus offering the possibility to define
+complex routing rules.
+
+When creating the message, use `route()` function to specify these values:
+
+```js
+gateway.message('+1234', 'hi')
+    .route('users', 'notification')
+    .send().done();
+```
+
+Now, set a router function:
+a function which gets an outgoing message + some additional routing values, and decides on the provider to use:
+
+```js
+gateway.addProvider('clickatell', 'primary', {});
+gateway.addProvider('clickatell', 'secondary', {});
+gateway.addProvider('clickatell', 'usa', {});
+
+gateway.setRouter(function(message, module, type){
+    // Use 'usa' for all messages to USA
+    if (/^+1/.test(message.to))
+        return 'usa';
+    // Use 'secondary' for notifications
+    if (type === 'notification')
+        return 'secondary';
+    // Use 'primary' as a default
+    return 'primary';
+});
+```
+
+Router function is also the right place to specify message options & parameters.
+
+To unset the router function, call `gateway.setRouter()` with no arguments.
+
+
+
 
 
 
@@ -446,49 +550,3 @@ gateway.getProvider('lo').subscribe('+123456', function(from, body, reply){
 });
 gateway.message('+123456', 'hi').send();
 ```
-
-
-Message Routing
-===============
-SMSframework requires you to explicitly specify the provider for each message, or uses the first one.
-
-In real world conditions with multiple providers, you may want a router function that decides on which provider to use
-and which options to pick.
-
-In order to achive flexible message routing, we need to associate some metadata with each message, for instance:
-
-* `module`: name of the sending module: e.g. "users"
-* `type`: type of the message: e.g. "notification"
-
-These 2 arbitrary strings need to be standardized in the application code, thus offering the possibility to define
-complex routing rules.
-
-When creating the message, use `route()` function to specify these values:
-
-```js
-gateway.message('+1234', 'hi')
-    .route('users', 'notification')
-    .send().done();
-```
-
-Now, set a router function:
-a function which gets an outgoing message + some additional routing values, and decides on the provider to use:
-
-```js
-gateway.addProvider('clickatell', 'primary', {});
-gateway.addProvider('clickatell', 'secondary', {});
-gateway.addProvider('clickatell', 'usa', {});
-
-gateway.setRouter(function(message, module, type){
-    // Use 'usa' for all messages to USA
-    if (/^+1/.test(message.to))
-        return 'usa';
-    // Use 'secondary' for notifications
-    if (type === 'notification')
-        return 'secondary';
-    // Use 'primary' as a default
-    return 'primary';
-});
-```
-
-Router function is also the right place to specify message options & parameters.

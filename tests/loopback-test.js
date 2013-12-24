@@ -55,7 +55,7 @@ exports.testLoopbackProvider = function(test){
         function(){
             gw_events = [], subscriber_log = [];
             return gw.message('+???', 'hello?').send()
-                .then(function(){
+                .then(function(message){
                     // Test traffic
                     var lo0_t = gw.getProvider('lo0').getTraffic(),
                         lo1_t = gw.getProvider('lo1').getTraffic()
@@ -79,6 +79,9 @@ exports.testLoopbackProvider = function(test){
                             info: { msgid: 1 }
                         }
                     );
+
+                    // Test send() value
+                    test.deepEqual(lo0_t[0], message);
 
                     // Test events
                     test.deepEqual(gw_events, [ 'msg-out' ]);
@@ -151,20 +154,17 @@ exports.testLoopbackProvider = function(test){
                 msg_in = msg;
             });
 
-            // HTTP Listen
-            var listening = Q.defer();
-            var port;
-
-            var server = gw.express().listen(0, 'localhost', function(){
-                listening.resolve();
-                port = server.address().port;
-            });
-
-            // Simulate an incoming message
-            return listening.promise
+            // Listen
+            var server, port;
+            return Q.promise(function(resolve, reject, notify){
+                    server = gw.express().listen(0, 'localhost', function(){
+                        port = server.address().port;
+                        test.ok(port > 0);
+                        resolve();
+                    });
+                })
+                // Simulate an incoming message
                 .then(function(){
-                    test.ok(port > 0);
-
                     return Q.promise(function(resolve, reject, notify){
                         // Make a request
                         request({
@@ -216,7 +216,79 @@ exports.testLoopbackProvider = function(test){
                     .then(function(message){ test.strictEqual(message.provider, 'lo0'); }),
                 gw.message('+999', 'hi').route('test', 'notify').send()
                     .then(function(message){ test.strictEqual(message.provider, 'lo1'); })
-            ]);
+            ]).then(function(){
+                    gw.setRouter();
+                });
+        },
+        // Functional Handlers
+        function(){
+            // Receivers
+            var incoming_messages = [], statuses = [];
+
+            gw.receiveMessage(function(message){ incoming_messages.push(message); });
+            gw.receiveStatus(function(status){ statuses.push(status); });
+
+            // Send message
+            return gw.message('+echo', 'func').provider('lo1').options({ status_report: true }).send()
+                .then(function(){
+                    // Test receiveMessage value
+                    test.strictEqual(incoming_messages.length, 1);
+                    test.deepEqual(
+                        _.omit(incoming_messages[0], 'date'),
+                        { from: '+echo', to: '', body: 'func rocks!', provider: 'lo1', msgid: 5, info: {} }
+                    );
+
+                    // Test receiveStatus value
+                    test.strictEqual(statuses.length, 1);
+                    test.deepEqual(
+                        _.omit(statuses[0], 'date'),
+                        { provider: 'lo1', msgid: 4, delivered: true, error: undefined, info: {} }
+                    );
+                });
+        },
+        // Functional Handlers
+        function(){
+            // Errorneous receiver
+            gw.receiveMessage(function(message){ throw new Error('neener-neener!'); });
+
+            var errors = [];
+            gw.on('error', function(err){ errors.push(err); });
+
+            // Listen
+            var server, port;
+            return Q.promise(function(resolve, reject, notify){
+                    server = gw.express().listen(0, 'localhost', function(){
+                        port = server.address().port;
+                        test.ok(port > 0);
+                        resolve();
+                    });
+                })
+                // Receive message
+                .then(function(){
+                    return Q.promise(function(resolve, reject, notify){
+                        // Make a request
+                        request({
+                            url: 'http://localhost:'+port+'/lo0/receive',
+                            method: 'POST',
+                            json: { from: '123', body: 'hi there' }
+                        }, function(err, res, body){
+                            if (err)
+                                reject(err);
+                            else {
+                                test.strictEqual(res.statusCode, 500);
+                                test.deepEqual(body, { ok: 0, error: 'neener-neener!' });
+                                resolve();
+                            }
+                        })
+                    });
+                })
+                // Test errors
+                .then(function(){
+                    test.strictEqual(errors.length, 1);
+                    test.strictEqual(errors[0].message, 'neener-neener!');
+                })
+                // Stop server
+                .finally(function(){ server.close(); });
         }
     ].reduce(Q.when, Q(1))
         .catch(function(err){ test.ok(false, err.stack); })
