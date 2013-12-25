@@ -323,7 +323,7 @@ Error object reported by the provider.
 
 Arguments:
 
-* `error: Error|SendMessageError`: The error object.
+* `error: Error|SendMessageError`: The error object. See [Error Objects](#error-objects).
 
 Useful to attach some centralized logging utility. Consider [winston](https://npmjs.org/package/winston) for this purpose.
 
@@ -395,6 +395,11 @@ MessageStatus
 A status report received from the provider.
 
 Source: [lib/data/MessageStatus.js](lib/data/MessageStatus.js).
+
+Error Objects
+-------------
+
+Source: [lib/data/MessageStatus.js](lib/errors.js).
 
 
 
