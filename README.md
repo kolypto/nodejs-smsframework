@@ -32,7 +32,7 @@ Table of Contents
         * <a href="#gatewayaddproviderproviders">Gateway.addProvider(providers)</a>
         * <a href="#gatewaygetprovideraliasiprovider">Gateway.getProvider(alias):IProvider</a>
     * <a href="#sending-messages">Sending Messages</a>
-    * <a href="#sending-errors">Sending Errors</a>
+        * <a href="#handling-send-errors">Handling Send Errors</a>
     * <a href="#events">Events</a>
         * <a href="#msg-out">msg-out</a>
         * <a href="#msg-sent">msg-sent</a>
@@ -182,7 +182,7 @@ Methods:
 * `send():Q`: Send the message.
 
     The method returns a promise for [OutgoingMessage](#outgoingmessage) which is resolved when a message is sent,
-    or rejected on sending error. See [Handling Send Errors](#sending-errors).
+    or rejected on sending error. See [Handling Send Errors](#handling-send-errors).
 
 * `from(from: String)`: Set the message originating number.
 
@@ -196,12 +196,14 @@ Methods:
 
 * `options(options: OutgoingMessageOptions)`: Specify sending options:
 
-    * `allow_reply: Boolean`: Allow replies for this message. Default: `true`
+    * `allow_reply: Boolean`: Allow replies for this message. Default: `false`
     * `status_report: Boolean`: Request a delivery report. Default: `false`. See: [status](#status)
     * `expires: Number?`: Message validity period in minutes. Default: none.
     * `senderId: String?`: SenderID to replace the source number. Default: none.
 
         *NOTE*: This advanced feature is not supported by all providers! Moreover, some of them can have special restrictions.
+
+    * `escalate: Boolean`: Is a high-priority message: these are delivered faster, at a higher price. Default: `false`.
 
 * `params(params: Object)`: Specify provider-dependent sending parameters: refer to the provider documentation for the details.
 
@@ -251,8 +253,7 @@ gateway.message('+123456', 'hi there').send()
 ```
 
 
-Sending Errors
---------------
+### Handling Send Errors
 When you `send()` a message, the promise may resolve to an error.
 
 The error object is provided as an argument to the callback function, and can be one of the following:
