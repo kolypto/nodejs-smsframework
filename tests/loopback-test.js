@@ -241,8 +241,16 @@ exports.testLoopbackProvider = function(test){
                     // Test receiveStatus value
                     test.strictEqual(statuses.length, 1);
                     test.deepEqual(
-                        _.omit(statuses[0], 'date'),
-                        { provider: 'lo1', msgid: 4, delivered: true, error: undefined, info: {} }
+                        _.omit(statuses[0], 'date', 'setStatus'),
+                        {
+                            provider: 'lo1',
+                            msgid: 4,
+                            delivered: true,
+                            error: undefined,
+                            info: {},
+                            status: 'SENT',
+                            statusText: 'Sent'
+                        }
                     );
                 });
         },
