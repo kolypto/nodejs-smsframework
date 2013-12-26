@@ -14,7 +14,8 @@ Key features:
 * Delivery confirmations
 * Handle multiple providers with a single gateway
 * Event-driven interface
-* Promise-based: using the [q](https://npmjs.org/package/q) package
+* Reliable message handling
+* Leverages [q](https://npmjs.org/package/q) promises
 * Unit-tested
 
 
@@ -46,7 +47,11 @@ Table of Contents
     * <a href="#incomingmessage">IncomingMessage</a>
     * <a href="#outgoingmessage">OutgoingMessage</a>
     * <a href="#messagestatus">MessageStatus</a>
+    * <a href="#error-objects">Error Objects</a>
 * <a href="#provider-http-receivers">Provider HTTP Receivers</a>
+    * <a href="#gatewayexpress">Gateway.express()</a>
+    * <a href="#gatewaylisten">Gateway.listen()</a>
+    * <a href="#receiver-security">Receiver Security</a>
 * <a href="#message-routing">Message Routing</a>
 * <a href="#bundled-providers">Bundled Providers</a>
     * <a href="#loopbackprovider">LoopbackProvider</a>
@@ -65,8 +70,8 @@ Supported Providers
 SMSframework supports the following
 
 * [loopback](#loopbackprovider): loopback provider for testing. Bundled.
-* [Vianett](https://npmjs.org/package/smsframework-vianett)
 * [Clickatell](https://npmjs.org/package/smsframework-clickatell)
+* Expecting more!
 
 Also see the [full list of providers](https://npmjs.org/browse/keyword/smsframework).
 
