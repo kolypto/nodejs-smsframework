@@ -131,27 +131,21 @@ An alternative syntax to add providers in bulk.
 
 Arguments:
 
-* `providers: Object` is an object that specifies multiple providers mapped to aliases:
+* `providers: Array.<{ provider: String, alias: String, config: Object? }>` is an array that specifies multiple providers:
 
     ```js
-    {
-        alias1: { provider: 'provider1', config: {} },
-        alias2: { provider: 'provider2', config: {} }
-    }
+    [
+        { provider: 'provider1', alias: 'primary', config: {} },
+        { provider: 'provider2', alias: 'secondary', config: {} }
+    ]
     ```
 
 This works perfectly when your providers are defined in the configuration. Consider using [js-yaml](https://npmjs.org/package/js-yaml):
 
 ```yaml
 providers:
-    alias1:
-        provider: provider1
-        config:
-            apitoken: '123465'
-    alias2:
-        provider: provider2
-        config:
-            apitoken: '987654'
+    - { provider: 'provider1', alias: 'primary', config: { apitoken: '123456' } }
+    - { provider: 'provider2', alias: 'secondary', config: { apitoken: '987654' } }
 ```
 
 Then, in the application:

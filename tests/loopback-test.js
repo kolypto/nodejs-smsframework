@@ -13,7 +13,9 @@ exports.testLoopbackProvider = function(test){
     // Create a gateway with 2 providers
     var gw = new smsframework.Gateway();
     gw.addProvider('loopback', 'lo0', {});
-    gw.addProvider('loopback', 'lo1', {});
+    gw.addProvider([
+        { provider: 'loopback', alias: 'lo1', config: {} }
+    ]);
 
     // Test structure
     test.deepEqual( _.keys(gw._providers), ['lo0', 'lo1'] );
