@@ -413,7 +413,9 @@ The Gateway has an internal [express](https://npmjs.org/package/express) applica
 to register their receivers: HTTP endpoints used to interact with the SMS services.
 
 Each provider is locked under the `/<alias>` prefix.
+
 The resources are provider-dependent: refer to the provider documentation for the details.
+The recommended approach is to use `/im` for incoming messages, and `/status` for status reports.
 
 To use the receivers in your application, use `Gateway.express()` method which returns an express middleware:
 
@@ -523,7 +525,7 @@ Source: [lib/providers/loopback.js](lib/providers/loopback.js)
 The `'loopback'` provider is used as a dummy for testing purposes.
 
 It consumes all messages, supports delivery notifications,
-and even has a `'/receiver'` HTTP receiver.
+and even has a `'/im'` HTTP receiver.
 
 All messages flowing through it get incremental `msgid`s starting from 1.
 

@@ -168,7 +168,7 @@ exports.testLoopbackProvider = function(test){
                     return Q.promise(function(resolve, reject, notify){
                         // Make a request
                         request({
-                            url: 'http://localhost:'+port+'/lo0/receive',
+                            url: 'http://localhost:'+port+'/lo0/im',
                             method: 'POST',
                             json: { from: '123', body: 'hi there' }
                         }, function(err, res, body){
@@ -268,7 +268,7 @@ exports.testLoopbackProvider = function(test){
                     return Q.promise(function(resolve, reject, notify){
                         // Make a request
                         request({
-                            url: 'http://localhost:'+port+'/lo0/receive',
+                            url: 'http://localhost:'+port+'/lo0/im',
                             method: 'POST',
                             json: { from: '123', body: 'hi there' }
                         }, function(err, res, body){
