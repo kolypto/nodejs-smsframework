@@ -155,16 +155,14 @@ exports.testLoopbackProvider = function(test){
             });
 
             // Listen
-            var server, port;
-            return Q.promise(function(resolve, reject, notify){
-                    server = gw.express().listen(0, 'localhost', function(){
-                        port = server.address().port;
-                        test.ok(port > 0);
-                        resolve();
-                    });
+            var server;
+            return gw.listen(0, 'localhost')
+                .then(function(srv){
+                    server = srv;
+                    return srv.address().port;
                 })
                 // Simulate an incoming message
-                .then(function(){
+                .then(function(port){
                     return Q.promise(function(resolve, reject, notify){
                         // Make a request
                         request({
@@ -200,7 +198,7 @@ exports.testLoopbackProvider = function(test){
                     );
                 })
                 .finally(function(){
-                    server.close();
+                    server && server.close();
                 });
         },
         // Test router function
@@ -263,16 +261,15 @@ exports.testLoopbackProvider = function(test){
             gw.on('error', function(err){ errors.push(err); });
 
             // Listen
-            var server, port;
-            return Q.promise(function(resolve, reject, notify){
-                    server = gw.express().listen(0, 'localhost', function(){
-                        port = server.address().port;
-                        test.ok(port > 0);
-                        resolve();
-                    });
+            // Listen
+            var server;
+            return gw.listen(0, 'localhost')
+                .then(function(srv){
+                    server = srv;
+                    return srv.address().port;
                 })
                 // Receive message
-                .then(function(){
+                .then(function(port){
                     return Q.promise(function(resolve, reject, notify){
                         // Make a request
                         request({
@@ -296,7 +293,7 @@ exports.testLoopbackProvider = function(test){
                     test.strictEqual(errors[0].message, 'neener-neener!');
                 })
                 // Stop server
-                .finally(function(){ server.close(); });
+                .finally(function(){ server && server.close(); });
         }
     ].reduce(Q.when, Q(1))
         .catch(function(err){ test.ok(false, err.stack); })

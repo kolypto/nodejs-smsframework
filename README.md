@@ -417,6 +417,7 @@ Each provider is locked under the `/<alias>` prefix.
 The resources are provider-dependent: refer to the provider documentation for the details.
 The recommended approach is to use `/im` for incoming messages, and `/status` for status reports.
 
+## Gateway.express()
 To use the receivers in your application, use `Gateway.express()` method which returns an express middleware:
 
 ```js
@@ -443,6 +444,26 @@ Assuming that the provider declares a receiver as `'/receiver'`,
 we now have a `'http://localhost:80/sms/primary/receiver'` path available.
 
 In your Clickatell admin area, add this URL so Clickatell passes the incoming messages to us.
+
+## Gateway.listen()
+Sugar to start listening on the specified network address immediately.
+
+Footprints (see [`net.Server`](http://nodejs.org/api/net.html#net_class_net_server)):
+
+* `Gateway.listen(port[, host])
+* `Gateway.listen(path)
+* `Gateway.listen(handle)
+
+Returns: a promise for the `http.Server` object.
+
+Example:
+
+```js
+gateway.listen(80).then(function(server){
+    console.log('Listening on ', server.address()); // Get the address
+    server.close(); // stop listening
+});
+```
 
 ## Receiver Security
 
