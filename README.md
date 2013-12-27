@@ -167,6 +167,7 @@ You don't normally need this, unless the provider has some public API: see provi
 Sending Messages
 ----------------
 
+### Gateway.message(to, body)
 To send a message, you first create it with `Gateway.message(to, body)` which returns a fluid interface object.
 
 Arguments:
@@ -191,7 +192,8 @@ Methods:
 
 * `provider(provider: String)`: Choose the provider by alias.
 
-    If no provider is specified - the first one is used to deliver the message.
+    If no provider is specified - routing is applied, which chooses the first one by default.
+    See [Message Routing](#message-routing).
 
 * `route(..values)`: Specify routing values. See [Message Routing](#message-routing).
 
@@ -251,6 +253,25 @@ gateway.message('+123456', 'hi there').send()
     .nodeify(function(err, message){
         // NodeJS callback
     });
+```
+
+### Gateway.sendMessage(message)
+Sends a message. This is a low-level interface that requires you to prepare an OutgoingMessage object first.
+
+Arguments:
+
+* `message: OutgoingMessage`: The message to send.
+
+Returns: a promise for [OutgoingMessage](#outgoingmessage).
+
+Example:
+
+```js
+var message = gateway.message('+123456', 'hi there')
+    .provider('primary')
+    .message; // get the OutgoingMessage object
+
+gateway.sendMessage(message).done(); // no error handling, so they're just thrown
 ```
 
 
@@ -485,7 +506,7 @@ NOTE: Other mechanisms, such as basic authentication, are not typically useful a
 
 Message Routing
 ===============
-SMSframework requires you to explicitly specify the provider for each message, or uses the first one.
+SMSframework requires you to explicitly specify the provider for each message, or uses the first one by default.
 
 In real world conditions with multiple providers, you may want a router function that decides on which provider to use
 and which options to pick.
