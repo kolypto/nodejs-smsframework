@@ -537,6 +537,27 @@ Bundled Providers
 =================
 The following providers are bundled with SMSframework and thus require no additional packages.
 
+LogProvider
+-----------
+
+Source: [lib/providers/log.js](lib/providers/log.js)
+
+The `'log'` provider just logs all outgoing messages without sending them anywhere.
+
+Config:
+
+* `log: function(OutgoingMessage)`: The logger function. Defalt: log message destination & text to the console.
+
+Example:
+
+```js
+gw.addProvider('log', 'log', {
+    log: function(message){
+        console.log('SMS to', message.to, ':', message.body);
+    }
+});
+```
+
 LoopbackProvider
 ----------------
 
