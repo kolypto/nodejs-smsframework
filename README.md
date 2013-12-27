@@ -54,6 +54,7 @@ Table of Contents
     * <a href="#receiver-security">Receiver Security</a>
 * <a href="#message-routing">Message Routing</a>
 * <a href="#bundled-providers">Bundled Providers</a>
+    * <a href="#logprovider">LogProvider</a>
     * <a href="#loopbackprovider">LoopbackProvider</a>
         * <a href="#loopbackprovidergettrafficarray">LoopbackProvider.getTraffic():Array.</a>
         * <a href="#loopbackproviderreceivefrom-bodyq">LoopbackProvider.receive(from, body):Q</a>
