@@ -54,6 +54,7 @@ Table of Contents
     * <a href="#receiver-security">Receiver Security</a>
 * <a href="#message-routing">Message Routing</a>
 * <a href="#bundled-providers">Bundled Providers</a>
+    * <a href="#nullprovider">NullProvider</a>
     * <a href="#logprovider">LogProvider</a>
     * <a href="#loopbackprovider">LoopbackProvider</a>
         * <a href="#loopbackprovidergettrafficarray">LoopbackProvider.getTraffic():Array.</a>
@@ -537,6 +538,19 @@ To unset the router function, call `gateway.setRouter()` with no arguments.
 Bundled Providers
 =================
 The following providers are bundled with SMSframework and thus require no additional packages.
+
+NullProvider
+------------
+
+Source: [lib/providers/null.js](lib/providers/null.js)
+
+The `'null'` provider just ignores all outgoing messages.
+
+Example:
+
+```js
+gw.addProvider('null', 'null'); // provider, alias
+```
 
 LogProvider
 -----------
