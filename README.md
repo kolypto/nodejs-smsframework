@@ -2,6 +2,8 @@
 [![Dependency Status](https://gemnasium.com/kolypto/nodejs-smsframework.png)](https://gemnasium.com/kolypto/nodejs-smsframework)
 [![Build Status](https://travis-ci.org/kolypto/nodejs-smsframework.png?branch=master)](https://travis-ci.org/kolypto/nodejs-smsframework)
 
+**PROJECT FROZEN**: Since I'm not doing much NodeJS nowadays, the project is not going to develop in the nearest future!
+
 SMSframework
 ============
 
